@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <sqlite3.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
