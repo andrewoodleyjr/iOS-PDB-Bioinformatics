@@ -16,6 +16,7 @@
 + (SQLiteDatabase *) database;
 
 -(NSMutableArray *)getDNAFromDatabase:(NSString *)query;
+-(BOOL)noReturnDNADatabaseQuery:(NSString *)query;
 
 @end
 

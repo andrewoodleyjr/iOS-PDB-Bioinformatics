@@ -9,7 +9,11 @@
 #import "TableViewController.h"
 
 @interface TableViewController ()
-
+{
+    UIAlertView *alertView;
+    NSFileManager *fileManager;
+    NSMutableData *_responseData;
+}
 @end
 
 @implementation TableViewController
@@ -27,24 +31,15 @@
 {
     [super viewDidLoad];
     
-    
     databaseArray = [[NSMutableArray alloc] init];
     searchResults = [[NSArray alloc] init];
-    
-    
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
 
 -(void)viewWillAppear:(BOOL)animated
 {
-//    _database =
+    
     databaseArray = [[SQLiteDatabase database] getDNAFromDatabase:@"SELECT dna_name FROM dna"];
-    NSLog(@"%@",databaseArray);
     [self.tableView reloadData];
 }
 
@@ -58,14 +53,12 @@
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-#warning Potentially incomplete method implementation.
     // Return the number of sections.
     return 1;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-#warning Incomplete method implementation.
     // Return the number of rows in the section.
     
     if (tableView == self.searchDisplayController.searchResultsTableView) {
@@ -95,116 +88,133 @@
 
 -(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    [searchDelayer invalidate], searchDelayer=nil;
-    if (YES /* ...or whatever validity test you want to apply */)
-        searchDelayer = [NSTimer scheduledTimerWithTimeInterval:1.5
-                                                         target:self
-                                                       selector:@selector(doDelayedSearch:)
-                                                       userInfo:searchText
-                                                        repeats:NO];
-    searchedText = searchText;
+    
 }
 
--(void)doDelayedSearch:(NSTimer *)t
+
+
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    NSLog(@"Searching...");
+    searchedText = searchBar.text;
+    NSString *urlString = [NSString stringWithFormat:@"http://www.pdb.org/pdb/files/%@.xml", [searchBar.text uppercaseString]];
+    NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]] delegate:self];
+    [connection start];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveResponse:(NSURLResponse *)response {
+    // A response has been received, this is where we initialize the instance var you created
+    // so that we can append data to it in the didReceiveData method
+    // Furthermore, this method is called each time there is a redirect so reinitializing it
+    // also serves to clear it
+    _responseData = [[NSMutableData alloc] init];
+}
+
+- (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
-    assert(t == searchDelayer);
-    //[self request:searchDelayer.userInfo];
-    searchDelayer = nil; // important because the timer is about to release and dealloc itself
-    [self searchOnline];
     
+    NSLog(@"Recieved data");
+    
+    [_responseData appendData:data];
 }
 
--(void)searchOnline{
+-(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
+{
+    alertView = [UIAlertView new];
+    alertView.title = @"Whoa";
+    alertView.message = [NSString stringWithFormat:@"%@ could not be found.", searchedText];
+    alertView.cancelButtonIndex = 0;
+    [alertView show];
+}
+
+-(void)connectionDidFinishLoading:(NSURLConnection *)connection
+{
     
     
-    // Plan out things needed to do
-    // Search for the file
-    // check if file is valid xml
-    // save if it is and record in db then refresh view, dont save if its not
-    // alert the user the status of either or...
+    NSLog(@"Did Finish...");
     
-    // On swipe delete the file after confirmation... 
+    NSString *xmlDataToString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
     
-    // parse file on tableview selection
-    // the sections are the type
-    // inside each section is the atom
-    // and inside each atom is the information about the atom...maybe...
-    
-    // For the calculations...???
-    // Not sure yet...
-    
-    
-    
-    
-    NSString *urlString = [NSString stringWithFormat:@"http://www.pdb.org/pdb/files/%@.xml", [searchedText uppercaseString]];
-    NSString *fileName = [NSString stringWithFormat:@"%@.xml", [searchedText uppercaseString]];
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:urlString]];
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent: fileName];
-    operation.outputStream = [NSOutputStream outputStreamToFileAtPath:path append:NO];
-    
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        NSLog(@"Successfully downloaded file to %@", path);
+    // Verify XML
+    // If good tell user they downloaded the file and download the image...
+    // Then save the name of the protein to the database...
+    // If bad, it was not found...
+    if ([self containsString:xmlDataToString]) {
+        // Save file
+        NSString *fileName = [NSString stringWithFormat:@"%@.xml", [searchedText uppercaseString]];
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:fileName];
+        [_responseData writeToFile:path atomically:YES];
         
-        // Then save it to the database...
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        NSLog(@"Error: %@", error);
-    }];
-    
-    [operation start];
+        NSString *urlString = [NSString stringWithFormat:@"http://www.rcsb.org/pdb/images/%@_bio_r_500.jpg", [searchedText lowercaseString]];
+        NSData *theImage = [NSData dataWithContentsOfURL:[NSURL URLWithString:urlString]];
+        fileName = [NSString stringWithFormat:@"%@.jpg", [searchedText uppercaseString]];
+        path = [[paths objectAtIndex:0] stringByAppendingPathComponent:fileName];
+        [theImage writeToFile:path atomically:YES];
+        
+        BOOL okay = [[SQLiteDatabase database] noReturnDNADatabaseQuery:[NSString stringWithFormat:@"INSERT INTO dna (dna_name) VALUES('%@')", [searchedText uppercaseString]]];
+        if (okay) {
+            alertView = [[UIAlertView alloc] initWithTitle:@"Yes" message:@"The protein was saved." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+            [databaseArray addObject:[searchedText uppercaseString]];
+            [self.tableView reloadData];
+            [self.searchDisplayController setActive:NO animated:YES];
+        }else{
+            alertView = [[UIAlertView alloc] initWithTitle:@"Whoa" message:@"The protein was not saved properly." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        }
+        
+        
+    }else{
+        alertView = [[UIAlertView alloc] initWithTitle:@"Whoa" message:@"The protein was not found." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        
+    }
+    [alertView show];
 }
 
-
-/*
-// Override to support conditional editing of the table view.
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    // Return NO if you do not want the specified item to be editable.
+- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
+    // Return YES if you want the specified item to be editable.
     return YES;
 }
-*/
 
-/*
 // Override to support editing the table view.
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
-{
+- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Delete the row from the data source
-        [tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
-    } else if (editingStyle == UITableViewCellEditingStyleInsert) {
-        // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
-    }   
-}
-*/
+        //add code here for when you hit delete
+        NSLog(@"Deleting protein...");
+        // Remove it from the sql database
+        // Delete the file (xml and image)
+        // remove it from the array
+        // update the tableview
+        BOOL okay = [[SQLiteDatabase database] noReturnDNADatabaseQuery:[NSString stringWithFormat:@"DELETE FROM dna WHERE dna_name = '%@'", [databaseArray objectAtIndex:indexPath.row]]];
+        if (okay) {
+            NSFileManager *fileManager = [NSFileManager defaultManager];
+            NSError *error;
+            NSString *fileName = [NSString stringWithFormat:@"%@.xml", [databaseArray objectAtIndex:indexPath.row]];
+            NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+            NSString *path = [[paths objectAtIndex:0] stringByAppendingPathComponent:fileName];
+            [fileManager removeItemAtPath:path error:&error];
+            fileName = [NSString stringWithFormat:@"%@.jpg", [databaseArray objectAtIndex:indexPath.row]];
+            path = [[paths objectAtIndex:0] stringByAppendingPathComponent:fileName];
+            [fileManager removeItemAtPath:path error:&error];
+            alertView = [[UIAlertView alloc] initWithTitle:@"Success" message:@"The protein was deleted." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+            [databaseArray removeObjectAtIndex:indexPath.row];
+            [self.tableView reloadData];
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
+        }else{
+            alertView = [[UIAlertView alloc] initWithTitle:@"Whoa" message:@"An error occured..." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        }
+        [alertView show];
+    }
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
 }
-*/
 
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
+- (BOOL) containsString: (NSString*) string
 {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
+    NSRange range = [string rangeOfString :@"<?xml version=\"1.0\" encoding=\"UTF-8\" ?>"];
+    BOOL found = ( range.location != NSNotFound );
+    return found;
 }
-*/
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

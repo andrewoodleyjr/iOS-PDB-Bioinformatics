@@ -10,7 +10,7 @@
 #import "SQLiteDatabase.h"
 #import "AFHTTPRequestOperation.h"
 
-@interface TableViewController : UITableViewController<UISearchBarDelegate, UISearchDisplayDelegate>
+@interface TableViewController : UITableViewController<UISearchBarDelegate, UISearchDisplayDelegate, NSURLConnectionDataDelegate, NSURLConnectionDelegate, NSURLConnectionDownloadDelegate>
 {
     
     NSMutableArray *databaseArray;

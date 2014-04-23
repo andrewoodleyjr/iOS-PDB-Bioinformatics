@@ -21,18 +21,36 @@ static SQLiteDatabase *_database;
 
 - (id)init {
     if ((self = [super init])) {
-        NSString *sqLiteDb = [[NSBundle mainBundle] pathForResource:@"dna"
-                                                             ofType:@"sqlite3"];
-        
+        NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+        NSString *documentsDirectory = [paths objectAtIndex:0];
+        NSString *sqLiteDb = [documentsDirectory stringByAppendingPathComponent:@"dna.sqlite3"];
+        [self createEditableCopyOfDatabaseIfNeeded:sqLiteDb];
         if (sqlite3_open([sqLiteDb UTF8String], &_database) != SQLITE_OK) {
             NSLog(@"Failted to open database!");
-        }
-        else{
+        }else{
             NSLog(@"Opened db");
         }
     }
     return self;
 }
+
+- (void) createEditableCopyOfDatabaseIfNeeded:(NSString *)writableDBPath
+{
+    BOOL success;
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    NSError *error;
+    
+    NSLog(@"writableDBPath == %@",writableDBPath);
+    if ([fileManager fileExistsAtPath:writableDBPath]){
+        NSLog(@"Database already exist");
+    }else{
+        NSString *defaultDBPath = [[NSBundle mainBundle] pathForResource:@"dna" ofType:@"sqlite3"];
+        success = [fileManager copyItemAtPath:defaultDBPath toPath:writableDBPath error:&error];
+        if (!success)
+            NSLog(@"Failed to create writable database file with message '%@'.", [error localizedDescription]);
+    }
+}
+
 
 -(NSMutableArray *)getDNAFromDatabase:(NSString *)query
 {
@@ -46,11 +64,26 @@ static SQLiteDatabase *_database;
             char *dnaName = (char *) sqlite3_column_text(statement, 0);
             NSString *name = [[NSString alloc] initWithUTF8String:dnaName];
             [dnaList addObject:name];
-            
         }
         sqlite3_finalize(statement);
     }
     return dnaList;
+}
+
+-(BOOL)noReturnDNADatabaseQuery:(NSString *)query
+{
+    BOOL status = NO;
+    sqlite3_stmt *statement;
+    if (sqlite3_prepare_v2(_database, [query UTF8String], -1, &statement, nil)
+        == SQLITE_OK) {
+        while (sqlite3_step(statement) == SQLITE_ROW) {
+        }
+        status = YES;
+    }else{
+        status = NO;
+    }
+    sqlite3_finalize(statement);
+    return status;
 }
 
 @end
