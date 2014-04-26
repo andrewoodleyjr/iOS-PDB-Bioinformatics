@@ -94,7 +94,7 @@
 
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
-    NSLog(@"Searching...");
+    // NSLog(@"Searching...");
     searchedText = searchBar.text;
     NSString *urlString = [NSString stringWithFormat:@"http://www.pdb.org/pdb/files/%@.xml", [searchBar.text uppercaseString]];
     NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:[NSURLRequest requestWithURL:[NSURL URLWithString:urlString]] delegate:self];
@@ -112,17 +112,14 @@
 - (void)connection:(NSURLConnection *)connection didReceiveData:(NSData *)data
 {
     
-    NSLog(@"Recieved data");
+    // NSLog(@"Recieved data");
     
     [_responseData appendData:data];
 }
 
 -(void)connection:(NSURLConnection *)connection didFailWithError:(NSError *)error
 {
-    alertView = [UIAlertView new];
-    alertView.title = @"Whoa";
-    alertView.message = [NSString stringWithFormat:@"%@ could not be found.", searchedText];
-    alertView.cancelButtonIndex = 0;
+    alertView = [[UIAlertView alloc] initWithTitle:@"Whoa" message:[NSString stringWithFormat:@"%@ could not be found.", searchedText] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
     [alertView show];
 }
 
@@ -130,7 +127,7 @@
 {
     
     
-    NSLog(@"Did Finish...");
+    // NSLog(@"Did Finish...");
     
     NSString *xmlDataToString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
     
@@ -163,7 +160,7 @@
         
         
     }else{
-        alertView = [[UIAlertView alloc] initWithTitle:@"Whoa" message:@"The protein was not found." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        alertView = [[UIAlertView alloc] initWithTitle:@"Whoa" message:[NSString stringWithFormat:@"%@ could not be found.", searchedText] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
         
     }
     [alertView show];
@@ -178,7 +175,7 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
         //add code here for when you hit delete
-        NSLog(@"Deleting protein...");
+        // NSLog(@"Deleting protein...");
         // Remove it from the sql database
         // Delete the file (xml and image)
         // remove it from the array
@@ -207,6 +204,17 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    UITableViewCell *cell = (UITableViewCell *)sender;
+    // NSLog(@"cell title %@", cell.textLabel.text);
+    
+    ProteinTableViewController *pViewController = (ProteinTableViewController *)segue.destinationViewController;
+    pViewController.protein = cell.textLabel.text;
+    
     
 }
 

@@ -26,9 +26,9 @@ static SQLiteDatabase *_database;
         NSString *sqLiteDb = [documentsDirectory stringByAppendingPathComponent:@"dna.sqlite3"];
         [self createEditableCopyOfDatabaseIfNeeded:sqLiteDb];
         if (sqlite3_open([sqLiteDb UTF8String], &_database) != SQLITE_OK) {
-            NSLog(@"Failted to open database!");
+            // NSLog(@"Failted to open database!");
         }else{
-            NSLog(@"Opened db");
+            // NSLog(@"Opened db");
         }
     }
     return self;
@@ -40,14 +40,14 @@ static SQLiteDatabase *_database;
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSError *error;
     
-    NSLog(@"writableDBPath == %@",writableDBPath);
+    // NSLog(@"writableDBPath == %@",writableDBPath);
     if ([fileManager fileExistsAtPath:writableDBPath]){
-        NSLog(@"Database already exist");
+        // NSLog(@"Database already exist");
     }else{
         NSString *defaultDBPath = [[NSBundle mainBundle] pathForResource:@"dna" ofType:@"sqlite3"];
         success = [fileManager copyItemAtPath:defaultDBPath toPath:writableDBPath error:&error];
         if (!success)
-            NSLog(@"Failed to create writable database file with message '%@'.", [error localizedDescription]);
+             NSLog(@"Failed to create writable database file with message '%@'.", [error localizedDescription]);
     }
 }
 

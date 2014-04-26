@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "SQLiteDatabase.h"
 #import "AFHTTPRequestOperation.h"
+#import "ProteinTableViewController.h"
 
 @interface TableViewController : UITableViewController<UISearchBarDelegate, UISearchDisplayDelegate, NSURLConnectionDataDelegate, NSURLConnectionDelegate, NSURLConnectionDownloadDelegate>
 {

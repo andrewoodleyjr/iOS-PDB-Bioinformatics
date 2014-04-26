@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C49A05F1190B3843000751E4 /* ProteinTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A05F0190B3843000751E4 /* ProteinTableViewController.m */; };
+		C49A05F4190B39AC000751E4 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A05F3190B39AC000751E4 /* XMLReader.m */; };
+		C49A05F8190B5567000751E4 /* atomObject.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A05F7190B5567000751E4 /* atomObject.m */; };
+		C49A05FB190B7851000751E4 /* STCollapseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A05FA190B7851000751E4 /* STCollapseTableView.m */; };
 		C4E7118318FE0BA500D6A098 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E7118218FE0BA500D6A098 /* Foundation.framework */; };
 		C4E7118518FE0BA500D6A098 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E7118418FE0BA500D6A098 /* CoreGraphics.framework */; };
 		C4E7118718FE0BA500D6A098 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E7118618FE0BA500D6A098 /* UIKit.framework */; };
@@ -46,6 +50,14 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C49A05EF190B3843000751E4 /* ProteinTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ProteinTableViewController.h; sourceTree = "<group>"; };
+		C49A05F0190B3843000751E4 /* ProteinTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ProteinTableViewController.m; sourceTree = "<group>"; };
+		C49A05F2190B39AC000751E4 /* XMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLReader.h; sourceTree = "<group>"; };
+		C49A05F3190B39AC000751E4 /* XMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLReader.m; sourceTree = "<group>"; };
+		C49A05F6190B5567000751E4 /* atomObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = atomObject.h; path = bio/atomObject.h; sourceTree = "<group>"; };
+		C49A05F7190B5567000751E4 /* atomObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = atomObject.m; path = bio/atomObject.m; sourceTree = "<group>"; };
+		C49A05F9190B7851000751E4 /* STCollapseTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STCollapseTableView.h; sourceTree = "<group>"; };
+		C49A05FA190B7851000751E4 /* STCollapseTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STCollapseTableView.m; sourceTree = "<group>"; };
 		C4E7117F18FE0BA500D6A098 /* bio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4E7118218FE0BA500D6A098 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C4E7118418FE0BA500D6A098 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -115,9 +127,20 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C49A05F5190B39B3000751E4 /* XMLReader */ = {
+			isa = PBXGroup;
+			children = (
+				C49A05F2190B39AC000751E4 /* XMLReader.h */,
+				C49A05F3190B39AC000751E4 /* XMLReader.m */,
+			);
+			name = XMLReader;
+			sourceTree = "<group>";
+		};
 		C4E7117618FE0BA500D6A098 = {
 			isa = PBXGroup;
 			children = (
+				C49A05F6190B5567000751E4 /* atomObject.h */,
+				C49A05F7190B5567000751E4 /* atomObject.m */,
 				C4E7118818FE0BA500D6A098 /* bio */,
 				C4E711A718FE0BA500D6A098 /* bioTests */,
 				C4E7118118FE0BA500D6A098 /* Frameworks */,
@@ -154,7 +177,12 @@
 				C4E7119418FE0BA500D6A098 /* Main.storyboard */,
 				C4E711B718FE0D2200D6A098 /* TableViewController.h */,
 				C4E711B818FE0D2200D6A098 /* TableViewController.m */,
+				C49A05F9190B7851000751E4 /* STCollapseTableView.h */,
+				C49A05FA190B7851000751E4 /* STCollapseTableView.m */,
+				C49A05EF190B3843000751E4 /* ProteinTableViewController.h */,
+				C49A05F0190B3843000751E4 /* ProteinTableViewController.m */,
 				C4E7119A18FE0BA500D6A098 /* Images.xcassets */,
+				C49A05F5190B39B3000751E4 /* XMLReader */,
 				C4E711C618FE291600D6A098 /* AFNetworking */,
 				C4E711BE18FE0F3D00D6A098 /* Database */,
 				C4E7118918FE0BA500D6A098 /* Supporting Files */,
@@ -332,12 +360,16 @@
 				C4E711DF18FE291600D6A098 /* AFURLConnectionOperation.m in Sources */,
 				C4E711DA18FE291600D6A098 /* AFHTTPRequestOperation.m in Sources */,
 				C4E711C318FE1C0400D6A098 /* SQLiteDatabase.m in Sources */,
+				C49A05F4190B39AC000751E4 /* XMLReader.m in Sources */,
 				C4E711E018FE291600D6A098 /* AFURLRequestSerialization.m in Sources */,
 				C4E711DC18FE291600D6A098 /* AFHTTPSessionManager.m in Sources */,
 				C4E711DD18FE291600D6A098 /* AFNetworkReachabilityManager.m in Sources */,
+				C49A05FB190B7851000751E4 /* STCollapseTableView.m in Sources */,
 				C4E711E118FE291600D6A098 /* AFURLResponseSerialization.m in Sources */,
 				C4E711E218FE291600D6A098 /* AFURLSessionManager.m in Sources */,
 				C4E7118F18FE0BA500D6A098 /* main.m in Sources */,
+				C49A05F1190B3843000751E4 /* ProteinTableViewController.m in Sources */,
+				C49A05F8190B5567000751E4 /* atomObject.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -465,6 +497,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "bio/bio-Prefix.pch";
 				INFOPLIST_FILE = "bio/bio-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -478,6 +511,7 @@
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "bio/bio-Prefix.pch";
 				INFOPLIST_FILE = "bio/bio-Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 7.1;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				WRAPPER_EXTENSION = app;
 			};
@@ -542,6 +576,7 @@
 				C4E711B318FE0BA500D6A098 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		C4E711B418FE0BA500D6A098 /* Build configuration list for PBXNativeTarget "bioTests" */ = {
 			isa = XCConfigurationList;
@@ -550,6 +585,7 @@
 				C4E711B618FE0BA500D6A098 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
