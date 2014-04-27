@@ -74,7 +74,7 @@
 
 - (void)setupCollapseTableView
 {
-	self.exclusiveSections = YES;
+	self.exclusiveSections = NO;
     self.shouldHandleHeadersTap = YES;
 	self.sectionsStates = [[NSMutableArray alloc] init];
 }

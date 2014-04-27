@@ -125,10 +125,6 @@
 
 -(void)connectionDidFinishLoading:(NSURLConnection *)connection
 {
-    
-    
-    // NSLog(@"Did Finish...");
-    
     NSString *xmlDataToString = [[NSString alloc] initWithData:_responseData encoding:NSUTF8StringEncoding];
     
     // Verify XML

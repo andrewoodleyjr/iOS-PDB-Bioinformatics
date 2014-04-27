@@ -11,6 +11,9 @@
 		C49A05F4190B39AC000751E4 /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A05F3190B39AC000751E4 /* XMLReader.m */; };
 		C49A05F8190B5567000751E4 /* atomObject.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A05F7190B5567000751E4 /* atomObject.m */; };
 		C49A05FB190B7851000751E4 /* STCollapseTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A05FA190B7851000751E4 /* STCollapseTableView.m */; };
+		C49A0601190BF33D000751E4 /* reveal-icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C49A05FF190BF33D000751E4 /* reveal-icon.png */; };
+		C49A0602190BF33D000751E4 /* reveal-icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C49A0600190BF33D000751E4 /* reveal-icon@2x.png */; };
+		C49A0605190BF536000751E4 /* SWRevealViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C49A0604190BF536000751E4 /* SWRevealViewController.m */; };
 		C4E7118318FE0BA500D6A098 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E7118218FE0BA500D6A098 /* Foundation.framework */; };
 		C4E7118518FE0BA500D6A098 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E7118418FE0BA500D6A098 /* CoreGraphics.framework */; };
 		C4E7118718FE0BA500D6A098 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C4E7118618FE0BA500D6A098 /* UIKit.framework */; };
@@ -58,6 +61,10 @@
 		C49A05F7190B5567000751E4 /* atomObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = atomObject.m; path = bio/atomObject.m; sourceTree = "<group>"; };
 		C49A05F9190B7851000751E4 /* STCollapseTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = STCollapseTableView.h; sourceTree = "<group>"; };
 		C49A05FA190B7851000751E4 /* STCollapseTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = STCollapseTableView.m; sourceTree = "<group>"; };
+		C49A05FF190BF33D000751E4 /* reveal-icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reveal-icon.png"; sourceTree = "<group>"; };
+		C49A0600190BF33D000751E4 /* reveal-icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "reveal-icon@2x.png"; sourceTree = "<group>"; };
+		C49A0603190BF536000751E4 /* SWRevealViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SWRevealViewController.h; sourceTree = "<group>"; };
+		C49A0604190BF536000751E4 /* SWRevealViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SWRevealViewController.m; sourceTree = "<group>"; };
 		C4E7117F18FE0BA500D6A098 /* bio.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bio.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C4E7118218FE0BA500D6A098 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		C4E7118418FE0BA500D6A098 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -136,6 +143,27 @@
 			name = XMLReader;
 			sourceTree = "<group>";
 		};
+		C49A0610190C04FE000751E4 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				C49A0603190BF536000751E4 /* SWRevealViewController.h */,
+				C49A0604190BF536000751E4 /* SWRevealViewController.m */,
+				C49A05F9190B7851000751E4 /* STCollapseTableView.h */,
+				C49A05FA190B7851000751E4 /* STCollapseTableView.m */,
+			);
+			name = Library;
+			sourceTree = "<group>";
+		};
+		C49A0611190C0512000751E4 /* Image */ = {
+			isa = PBXGroup;
+			children = (
+				C4E7119A18FE0BA500D6A098 /* Images.xcassets */,
+				C49A05FF190BF33D000751E4 /* reveal-icon.png */,
+				C49A0600190BF33D000751E4 /* reveal-icon@2x.png */,
+			);
+			name = Image;
+			sourceTree = "<group>";
+		};
 		C4E7117618FE0BA500D6A098 = {
 			isa = PBXGroup;
 			children = (
@@ -177,11 +205,10 @@
 				C4E7119418FE0BA500D6A098 /* Main.storyboard */,
 				C4E711B718FE0D2200D6A098 /* TableViewController.h */,
 				C4E711B818FE0D2200D6A098 /* TableViewController.m */,
-				C49A05F9190B7851000751E4 /* STCollapseTableView.h */,
-				C49A05FA190B7851000751E4 /* STCollapseTableView.m */,
 				C49A05EF190B3843000751E4 /* ProteinTableViewController.h */,
 				C49A05F0190B3843000751E4 /* ProteinTableViewController.m */,
-				C4E7119A18FE0BA500D6A098 /* Images.xcassets */,
+				C49A0611190C0512000751E4 /* Image */,
+				C49A0610190C04FE000751E4 /* Library */,
 				C49A05F5190B39B3000751E4 /* XMLReader */,
 				C4E711C618FE291600D6A098 /* AFNetworking */,
 				C4E711BE18FE0F3D00D6A098 /* Database */,
@@ -333,8 +360,10 @@
 			files = (
 				C4E7119B18FE0BA500D6A098 /* Images.xcassets in Resources */,
 				C4E711C518FE1EF700D6A098 /* dna.sqlite3 in Resources */,
+				C49A0602190BF33D000751E4 /* reveal-icon@2x.png in Resources */,
 				C4E7118D18FE0BA500D6A098 /* InfoPlist.strings in Resources */,
 				C4E7119618FE0BA500D6A098 /* Main.storyboard in Resources */,
+				C49A0601190BF33D000751E4 /* reveal-icon.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -354,6 +383,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4E7119318FE0BA500D6A098 /* AppDelegate.m in Sources */,
+				C49A0605190BF536000751E4 /* SWRevealViewController.m in Sources */,
 				C4E711DE18FE291600D6A098 /* AFSecurityPolicy.m in Sources */,
 				C4E711B918FE0D2200D6A098 /* TableViewController.m in Sources */,
 				C4E711DB18FE291600D6A098 /* AFHTTPRequestOperationManager.m in Sources */,

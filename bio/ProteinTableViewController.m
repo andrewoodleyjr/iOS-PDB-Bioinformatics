@@ -16,6 +16,8 @@
     NSDictionary *xmlDictionary;
     NSFileManager *fileManager;
     atomObject *objectAtom;
+    NSMutableArray *tempSearch;
+    BOOL searching;
 }
 
 @property (strong, nonatomic) NSMutableArray *proteinArray;
@@ -24,6 +26,7 @@
 
 @implementation ProteinTableViewController
 @synthesize proteinArray;
+@synthesize menuSlider;
 
 - (id)initWithStyle:(UITableViewStyle)style
 {
@@ -38,21 +41,95 @@
 {
     [super viewDidLoad];
     self.navigationItem.title = self.protein;
+    tempSearch = [[NSMutableArray alloc] init];
     proteinArray = [[NSMutableArray alloc] init];
     fileManager = [NSFileManager defaultManager];
     paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
     
-    NSHashTable *hashTable = [NSHashTable hashTableWithOptions:NSPointerFunctionsCopyIn];
-    [hashTable addObject:@"foo"];
-    [hashTable addObject:@"bar"];
-    [hashTable addObject:@42];
-    [hashTable removeObject:@"bar"];
-    [hashTable addObject:self.protein];
-    // NSLog(@"Members: %@", [hashTable allObjects]);
-    
+    [self setUpSlider];
     [self setImage];
     [self setXMLToJSONObject];
     [self setTopView];
+    self.tableView.allowsMultipleSelection = YES;
+    
+}
+
+-(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar{
+    
+    BOOL valid;
+    NSCharacterSet *alphaNums = [NSCharacterSet decimalDigitCharacterSet];
+    NSCharacterSet *inStringSet = [NSCharacterSet characterSetWithCharactersInString:searchBar.text];
+    valid = [alphaNums isSupersetOfSet:inStringSet];
+    if (!valid){
+        // Not numeric
+        [self searchForOccurances:searchBar.text];
+    }else{
+        [self searchForAmminoAcid:searchBar.text];
+    }
+    
+}
+
+-(void)searchForOccurances:(NSString *)amminoAcid{
+    [tempSearch removeAllObjects];
+    BOOL found = NO;
+    for (NSArray *tempArray in proteinArray) {
+        for (atomObject *tempObject in tempArray) {
+            if ([tempObject.altLoc isEqualToString:[amminoAcid uppercaseString]]) {
+                found = YES;
+                [tempSearch addObject:tempArray];
+            }
+            break;
+        }
+    }
+    if (!found) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Search Results" message:@"Could not find the number of occurrences." delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [alertView show];
+    }else{
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Search Results" message:[NSString stringWithFormat:@"The number of occurrences for %@ is %lu", [amminoAcid uppercaseString], [tempSearch count]] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [alertView show];
+        searching = YES;
+        [self.tableView reloadData];
+    }
+
+}
+
+-(void)searchForAmminoAcid:(NSString *)usingSequenceID{
+    [tempSearch removeAllObjects];
+    BOOL found = NO;
+    NSString *tempAlertMessage = @"Could not find the Ammino Acid";
+    for (NSArray *tempArray in proteinArray) {
+        if (!found) {
+            for (atomObject *tempObject in tempArray) {
+                if ([tempObject.chainID intValue] == [usingSequenceID intValue] ) {
+//                    tempAlertMessage = [NSString stringWithFormat:@"Based on the sequence number %@ this Ammino Acid is %@", usingSequenceID, tempObject.altLoc];
+                    found = YES;
+                    [tempSearch addObject:tempArray];
+                    searching = YES;
+                    [self.tableView reloadData];
+                }
+                break;
+            }
+        }else{
+            break;
+        }
+    }
+    if (!found) {
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Search Results" message:tempAlertMessage delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [alertView show];
+    }
+    
+}
+
+-(void)setUpSlider{
+    
+}
+
+-(void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText{
+    if ([searchText isEqualToString:@""]) {
+        searching = NO;
+        [self.tableView reloadData];
+    }
+    
 }
 
 -(void)setImage{
@@ -138,6 +215,7 @@
 -(void)setTopView{
     self.dnaLabel.text = self.protein;
     self.atomNumber.text = [NSString stringWithFormat:@"Number of atoms %lu", (unsigned long)[[[[xmlDictionary objectForKey:@"PDBx:datablock" ] objectForKey:@"PDBx:atom_siteCategory"] objectForKey:@"PDBx:atom_site" ] count]];
+    self.aaNumber.text = [NSString stringWithFormat:@"Number of Ammino Acids %lu", [self.proteinArray count]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -146,18 +224,50 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *selectedIndexPaths = self.tableView.indexPathsForSelectedRows;
+    
+    if ([selectedIndexPaths count] == 2) {
+        NSLog(@"The selected index paths are %@", selectedIndexPaths);
+        
+        NSIndexPath *indexP1 = [selectedIndexPaths objectAtIndex:0];
+        atomObject *object1 = (atomObject *)[[proteinArray objectAtIndex:indexP1.section] objectAtIndex:indexP1.row];
+        NSIndexPath *indexP2 = [selectedIndexPaths objectAtIndex:1];
+        atomObject *object2 = (atomObject *)[[proteinArray objectAtIndex:indexP2.section] objectAtIndex:indexP2.row];
+        
+        // Distance formula
+        long double distance = sqrtl(powl(([object2.x doubleValue] - [object1.x doubleValue]), 2) + powl(([object2.y doubleValue] - [object1.y doubleValue]), 2) + powl(([object2.z doubleValue] - [object1.z doubleValue]), 2));
+        
+        UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Distance" message:[NSString stringWithFormat:@"The distance between the two is %Lf", distance] delegate:self cancelButtonTitle:@"Okay" otherButtonTitles:nil, nil];
+        [alertView show];
+        
+        for (NSIndexPath *indexPaths in selectedIndexPaths) {
+            [tableView deselectRowAtIndexPath:indexPaths animated:YES];
+        }
+        
+    }
+    
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     // Return the number of sections.
-    self.aaNumber.text = [NSString stringWithFormat:@"Number of Ammino Acids %lu", [self.proteinArray count]];
+    
+    if (searching) {
+        return [tempSearch count];
+    }
     return [self.proteinArray count];
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     // Return the number of rows in the section.
+    if (searching) {
+        return [[tempSearch objectAtIndex:section] count];
+    }
     return [[self.proteinArray objectAtIndex:section] count];
 }
 
@@ -166,7 +276,13 @@
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"cell" forIndexPath:indexPath];
     
     // Configure the cell...
-    cell.textLabel.text = @"hello world";
+    if (searching) {
+        objectAtom = (atomObject *)[[tempSearch objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    }else{
+    objectAtom = (atomObject *)[[self.proteinArray objectAtIndex:indexPath.section] objectAtIndex:indexPath.row];
+    }
+    cell.textLabel.text = [NSString stringWithFormat:@"%d   %@", objectAtom.serial, objectAtom.name ];
+    cell.detailTextLabel.text = [NSString stringWithFormat:@"x:%@   y:%@     z:%@", objectAtom.x, objectAtom.y, objectAtom.z];
     return cell;
 }
 
@@ -182,16 +298,26 @@
     
     // NSLog(@"what %@", proteinArray);
     
-    objectAtom = (atomObject *)[[self.proteinArray objectAtIndex:section] objectAtIndex:0];
+    if (searching) {
+        objectAtom = (atomObject *)[[tempSearch objectAtIndex:section] objectAtIndex:0];
+    }else{
+        objectAtom = (atomObject *)[[self.proteinArray objectAtIndex:section] objectAtIndex:0];
+    }
+    
     NSString *chainId = objectAtom.chainID;
     NSString *resName = objectAtom.resName;
     NSString *altLocTxt = objectAtom.altLoc;
     
-    headerLabel.text = [NSString stringWithFormat:@"%@   %@    %@    Atoms:%lu", altLocTxt, resName, chainId, (unsigned long)[[self.proteinArray objectAtIndex:section] count]];
+    headerLabel.text = [NSString stringWithFormat:@"%@   %@    Sequence Number:%@    Atoms:%lu", altLocTxt, resName, chainId, (unsigned long)[[self.proteinArray objectAtIndex:section] count]];
     headerView.layer.borderColor = [UIColor lightGrayColor].CGColor;
     headerView.layer.borderWidth = .3;
     [headerView addSubview:headerLabel];
+    
     return headerView;
+}
+
+-(void)scrollViewWillBeginDragging:(UIScrollView *)scrollView{
+    [self.view endEditing:YES];
 }
 
 -(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section{
